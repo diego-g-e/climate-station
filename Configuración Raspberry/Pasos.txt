@@ -1,0 +1,54 @@
+PASOS:
+1- Estando conectados al wifi:
+2-Editar fichero /etc/network/interfaces
+3- Editar fichero /etc/wpa_supplicant
+4-Reiniciar raspberry
+
+Desde terminal de raspberry: ifconfig -> te da la IP de la rasp
+
+######## wpa_supplicant ###########
+# /etc/wpa_supplicant/wpa_supplicant.conf
+# Nombre: wpa_supplicant.conf
+
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+#escuela
+network={
+ ssid="eduroam"
+ key_mgmt=WPA-EAP
+ eap=TTLS
+ phase2="auth-PAP"
+ identity="llejarza001"
+ password="xxxxxxxx"
+ id_str="escuela"
+}
+
+
+#casa
+network={
+ ssid="Orange-4C70"
+ psk="C262243B"
+ key_mgmt=WPA-PSK
+ id_str = "casa"
+}
+
+
+########## interfaces ############
+EN OTRO ARCHIVO
+
+
+auto Io
+iface Io inet loopback
+
+allow-hotplug eth0
+iface eth0 inet dhcp
+
+allow-hotplug wlan0
+iface wlan0 inet manual
+wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
+iface escuela inet dhcp
+iface casa inet static
+
+
+
