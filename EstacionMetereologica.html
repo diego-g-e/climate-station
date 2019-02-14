@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <title>EstacionMetereologica</title>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 	<!-- Código que procede de una página web -->
+	<script type="text/javascript">
+	  var jsonData1;
+	  function myCallback1(dataWeGotViaJsonp) {
+	    jsonData1 = dataWeGotViaJsonp['feeds'];
+	  };
+	  var jsonData2;
+	  function myCallback2(dataWeGotViaJsonp) {
+	    jsonData2 = dataWeGotViaJsonp['feeds'];
+	  };
+	  <!-- Irá al URI desado donde esté 'feeds' y lo guardara en un array, en feeds están los datos
+	</script>
+	<script type="text/javascript" src=
+	"https://api.thingspeak.com/channels/699937/feeds.json?results=30&callback=myCallback1">
+	</script>
+	<script type="text/javascript" src=
+	"https://api.thingspeak.com/channels/699938/feeds.json?results=30&callback=myCallback2">
+	</script>
+	<script type="text/javascript">
+	  google.charts.load('current',{'packages':['corechart']}); 
+	  google.charts.setOnLoadCallback(drawchart); <!-- Cuando todo este bien llama a drawChart -->
+	  
+	  function drawchart(){
+	    var data = new google.visualization.DataTable();
+		data.addColumn('datetime','Time');
+		data.addColumn('number','Temperatura');
+		data.addColumn('number','Humedad');
+		
+		if(jsonData1<jsonData2) {
+		var len = jsonData1.length;
+		}else{
+		var len = jsonData2.length;
+		}
+		for(var i=0; i< len; i++) {
+		  <!--First channel adquisition-->
+		  var timestamp1 = jsonData1[i]['created_at'];
+		  var temp1 = jsonData1[i]['field1'];
+		  var hum1 = jsonData1[i]['field2'];
+		  data.addRow([new Date(timestamp1), parseFloat(temp1), parseFloat(hum1)]);
+		  <!--Second channel adquisition-->
+		  var timestamp2 = jsonData2[i]['created_at'];
+		  var temp2 = jsonData2[i]['field1'];
+		  var hum2 = jsonData2[i]['field2'];
+		  data.addRow([new Date(timestamp2), parseFloat(temp2), parseFloat(hum2)]);
+		};
+		
+	    var options = {
+		title: 'Estacion Meteorologica', legend: {position: 'bottom'},
+		curveType: 'function', colors: ['red','blue'],
+		series: {0: {targetAxisIndex: 0},1: {targetAxisIndex: 1}},
+		vAxes: {0: {title: 'Temperatura'},1: {title: 'Humedad'}}
+	    };
+		
+		<!-- Graficar-->
+		var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+		chart.draw(data, options);
+	  }
+	</script>
+  </head>
+  <body>
+    <div id="curve_chart"> </div> <!-- Sobre esto se colgará una aplicación >-->
+  </body>
+</html>
